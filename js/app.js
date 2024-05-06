@@ -4,7 +4,10 @@ const selectCategoria = document.querySelector('#categorias');
 selectCategoria.addEventListener('change', SeleccionarCategoria)
 
 const resultado = document.querySelector('#resultado');
-function iniciarApp() {
+
+//instnaciar modal con bootstrap
+const modal = new bootstrap.Modal('#modal', {})
+;function iniciarApp() {
     obtenerCategorias();
 }
 
@@ -110,7 +113,29 @@ function selecionarReceta(id) {
 }
 
 function mostrarRecetaModal(receta) {
-    
+    console.log(receta);
+    const {idMeal, strInstructions, strMeal, strMealThumb } = receta;
+    const modalTitle  = document.querySelector('.modal .modal-title');
+    const modalBody = document.querySelector('.modal .modal-body');
+    modalTitle.textContent = strMeal;
+    modalBody.innerHTML = `
+        <img class="img-fluid" src="${strMealThumb}" alt= "receta ${strMeal}"/>
+        <h3 class="my-3">Instrucciones</h3>
+        <p>${strInstructions}</p>
+    `;
+
+    //Mostrar cantidades e ingredientes
+
+    for (let i = 0; i < 20; i++) {
+
+        //validar si contiene algo
+        if (receta[`strIngredient${i}`]) {
+            const ingrediente = receta[`strIngredient${i}`];
+            const cantidad = receta[`strMeasure${i}`];
+        }
+    }
+    //mostrar modal
+    modal.show();
 }
 
 function LimpiarHtml(selector) {
