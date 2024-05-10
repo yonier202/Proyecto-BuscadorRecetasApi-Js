@@ -122,8 +122,11 @@ function mostrarRecetaModal(receta) {
         <img class="img-fluid" src="${strMealThumb}" alt= "receta ${strMeal}"/>
         <h3 class="my-3">Instrucciones</h3>
         <p>${strInstructions}</p>
+        <h3 class="my-3">Ingredientes y cantidades</h3>
     `;
 
+    const listGroup = document.createElement('UL');
+    listGroup.classList.add('list-group');
     //Mostrar cantidades e ingredientes
 
     for (let i = 0; i < 20; i++) {
@@ -132,8 +135,44 @@ function mostrarRecetaModal(receta) {
         if (receta[`strIngredient${i}`]) {
             const ingrediente = receta[`strIngredient${i}`];
             const cantidad = receta[`strMeasure${i}`];
+
+            const ingredienteLi = document.createElement('li'); 
+            ingredienteLi.classList.add('list-group-item');
+            ingredienteLi.textContent = `${ingrediente} - ${cantidad} `
+            
+            listGroup.appendChild(ingredienteLi);
         }
     }
+    modalBody.appendChild(listGroup);
+
+    const modalFooter = document.querySelector('.modal-footer');
+    LimpiarHtml(modalFooter)
+    //Botones de cerrar y favorito
+
+    const btnFavorito = document.createElement('button');
+    btnFavorito.classList.add('btn', 'btn-danger', 'col');
+    btnFavorito.textContent = 'Guardar Favorito';
+
+    //localstorage
+    btnFavorito.onclick = function () {
+        agregarFavorito({
+            id: idMeal,
+            strMeal: strMeal,
+            strMealThumb: strMealThumb
+        });
+    };
+
+    const btnCerrar = document.createElement('button');
+    btnCerrar.classList.add('btn', 'btn-secondary', 'col');
+    btnCerrar.textContent = 'Cerrar';
+    btnCerrar.onclick = function () {
+        // cerrar ventana
+        modal.hide();
+    }
+    
+    modalFooter.appendChild(btnFavorito);
+    modalFooter.appendChild(btnCerrar);
+
     //mostrar modal
     modal.show();
 }
@@ -142,4 +181,8 @@ function LimpiarHtml(selector) {
     while (selector.firstChild) {
         selector.removeChild(selector.firstChild);
     }
+}
+
+function agregarFavorito(receta) {
+    
 }
