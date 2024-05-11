@@ -151,15 +151,24 @@ function mostrarRecetaModal(receta) {
 
     const btnFavorito = document.createElement('button');
     btnFavorito.classList.add('btn', 'btn-danger', 'col');
-    btnFavorito.textContent = 'Guardar Favorito';
+    //validar texto si existe(para eliminar) y si no para guardar favorito
+    btnFavorito.textContent = existeStorage(idMeal) ? 'Eliminar Favorito' : 'Guardar Favorito';
 
     //localstorage
     btnFavorito.onclick = function () {
+        // si no existe se guarda en favoritos
+        if (existeStorage(idMeal)) {
+            EliminarFavorito(idMeal)
+            btnFavorito.textContent = 'Guardar Favorito';
+            return
+
+        }
         agregarFavorito({
             id: idMeal,
             strMeal: strMeal,
             strMealThumb: strMealThumb
         });
+        btnFavorito.textContent = 'Eliminar Favorito';
     };
 
     const btnCerrar = document.createElement('button');
@@ -184,5 +193,21 @@ function LimpiarHtml(selector) {
 }
 
 function agregarFavorito(receta) {
-    
+    //si no existe favoritos = arreglo vacio
+   const favoritos = JSON.parse(localStorage.getItem('favoritos')) ?? [];
+   //agregar al local storage, a favoritos 
+   localStorage.setItem('favoritos', JSON.stringify([...favoritos, receta])); 
+}
+
+function EliminarFavorito(id) {
+    const favoritos = JSON.parse(localStorage.getItem('favoritos')) ?? [];
+    const nuevosFavoritos = favoritos.filter(favorito => favoritos.id !== id);
+    localStorage.setItem('favoritos', JSON.stringify([nuevosFavoritos])); 
+}
+
+function existeStorage(id) {
+    //si no existe favoritos = arreglo vacio
+   const favoritos = JSON.parse(localStorage.getItem('favoritos')) ?? [];
+   //si existe devuelve true
+   return favoritos.some(favorito => favorito.id === id);
 }
