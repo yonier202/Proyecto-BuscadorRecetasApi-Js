@@ -1,13 +1,22 @@
-document.addEventListener('DOMContentLoaded', iniciarApp);
+// document.addEventListener('DOMContentLoaded', iniciarApp);
 
 const selectCategoria = document.querySelector('#categorias');
-selectCategoria.addEventListener('change', SeleccionarCategoria)
-
 const resultado = document.querySelector('#resultado');
 
+if (selectCategoria) {
+    selectCategoria.addEventListener('change', SeleccionarCategoria);
+    iniciarApp();
+}
+const favoritosDiv= document.querySelector('.favoritos');
+
+if (favoritosDiv) {
+    mostrarFavoritos();
+}
+
+
 //instnaciar modal con bootstrap
-const modal = new bootstrap.Modal('#modal', {})
-;function iniciarApp() {
+const modal = new bootstrap.Modal('#modal', {});
+function iniciarApp() {
     obtenerCategorias();
 }
 
@@ -67,15 +76,15 @@ function mostrarRecetas(recetas=[]) {
 
         const recetaImagen = document.createElement('IMG');
         recetaImagen.classList.add('card-img-top');
-        recetaImagen.alt= `Imagen de la receta ${strMeal}`;
-        recetaImagen.src= strMealThumb;
+        recetaImagen.alt= `Imagen de la receta ${strMeal ?? receta.titulo}`;
+        recetaImagen.src= strMealThumb ?? receta.imagen;
 
         const recetaCardBody=document.createElement('div');
         recetaCardBody.classList.add('card-body');
 
         const recetaHeadin = document.createElement('H3');
         recetaHeadin.classList.add('card-title', 'mb-3');
-        recetaHeadin.textContent = strMeal; 
+        recetaHeadin.textContent = strMeal ?? receta.titulo; 
 
         const recetaButon = document.createElement('BUTTON');
         recetaButon.classList.add('btn', 'btn-danger', 'w-100');
@@ -85,7 +94,7 @@ function mostrarRecetas(recetas=[]) {
         // recetaButon.dataset.bsTarget = "#modal";
         // recetaButon.dataset.bsToggle = "modal";
         recetaButon.onclick = function(){
-            selecionarReceta(idMeal);
+            selecionarReceta(idMeal ?? receta.id);
         }
 
 
@@ -160,15 +169,17 @@ function mostrarRecetaModal(receta) {
         if (existeStorage(idMeal)) {
             EliminarFavorito(idMeal)
             btnFavorito.textContent = 'Guardar Favorito';
+            mostrarToast('Eliminado Correctamente');
             return
 
         }
         agregarFavorito({
             id: idMeal,
-            strMeal: strMeal,
-            strMealThumb: strMealThumb
+            titulo : strMeal,
+            imagen: strMealThumb
         });
         btnFavorito.textContent = 'Eliminar Favorito';
+        mostrarToast('Agregado Correctamente');
     };
 
     const btnCerrar = document.createElement('button');
@@ -201,8 +212,8 @@ function agregarFavorito(receta) {
 
 function EliminarFavorito(id) {
     const favoritos = JSON.parse(localStorage.getItem('favoritos')) ?? [];
-    const nuevosFavoritos = favoritos.filter(favorito => favoritos.id !== id);
-    localStorage.setItem('favoritos', JSON.stringify([nuevosFavoritos])); 
+    const nuevosFavoritos = favoritos.filter(favorito => favorito.id !== id);
+    localStorage.setItem('favoritos', JSON.stringify(nuevosFavoritos)); 
 }
 
 function existeStorage(id) {
@@ -210,4 +221,27 @@ function existeStorage(id) {
    const favoritos = JSON.parse(localStorage.getItem('favoritos')) ?? [];
    //si existe devuelve true
    return favoritos.some(favorito => favorito.id === id);
+}
+
+function mostrarToast(mj) {
+    const toastDiv = document.querySelector('#toast');
+    const toastBody = document.querySelector('.toast-body');
+
+    const toast = new bootstrap.Toast(toastDiv);
+    toastBody.textContent = mj;
+    toast.show();
+
+}
+
+function mostrarFavoritos() {
+    const favoritos =JSON.parse(localStorage.getItem('favoritos')) ?? [];
+
+    if (favoritos.length) {
+        mostrarRecetas(favoritos);
+        return
+    }
+    const noFavoritos = document.createElement('P');
+    noFavoritos.classList.add('text-center', 'fs-4', 'font-bold', 'mt-5');
+    noFavoritos.textContent = 'No tienes favoritos';
+    favoritosDiv.appendChild(noFavoritos);
 }
