@@ -1,4 +1,4 @@
-// document.addEventListener('DOMContentLoaded', iniciarApp);
+document.addEventListener('DOMContentLoaded', iniciarApp);
 
 const selectCategoria = document.querySelector('#categorias');
 const resultado = document.querySelector('#resultado');
